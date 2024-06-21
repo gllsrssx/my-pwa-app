@@ -43,7 +43,8 @@ registerRoute(
 
     return true;
   },
-  createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
+  // Creëert een handler die gebonden is aan de URL van de index.html pagina, gebruikmakend van de basis URL gedefinieerd in de omgevingsvariabelen
+createHandlerBoundToURL(process.env.PUBLIC_URL + '/index.html')
 );
 
 // An example runtime caching route for requests that aren't handled by the
@@ -71,6 +72,7 @@ self.addEventListener('message', (event) => {
 
 // Any other custom service worker logic can go here.
 const CACHE_NAME = 'my-pwa-cache-v1';
+// what files to cache
 const urlsToCache = [
   '/',
   '/index.html',
@@ -80,7 +82,9 @@ const urlsToCache = [
   '/static/css/main.chunk.css'
 ];
 
+// Voegt een installatie event listener toe aan de service worker
 self.addEventListener('install', (event) => {
+  // Wacht op het openen van de cache en voegt vervolgens alle URLs toe die gecached moeten worden
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -89,13 +93,17 @@ self.addEventListener('install', (event) => {
   );
 });
 
+// Voegt een fetch event listener toe aan de service worker
 self.addEventListener('fetch', (event) => {
+  // Probeert het verzoek te beantwoorden met een gecachte respons
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
         if (response) {
+          // Als er een gecachte respons is, retourneer deze
           return response;
         }
+        // Als er geen gecachte respons is, doe een netwerkverzoek en retourneer de respons
         return fetch(event.request);
       })
   );
